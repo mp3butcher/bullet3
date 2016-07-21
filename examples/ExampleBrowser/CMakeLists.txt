@@ -38,7 +38,7 @@ ADD_LIBRARY(BulletExampleBrowserLib
 	../Utils/b3ResourcePath.h
 	${GwenGUISupport_SRCS}
 	${GwenGUISupport_HDRS}
-	
+
 )
 
 SET_TARGET_PROPERTIES(BulletExampleBrowserLib PROPERTIES VERSION ${BULLET_VERSION})
@@ -80,8 +80,10 @@ INCLUDE_DIRECTORIES(
 )
 
 
-LINK_LIBRARIES(
-        BulletExampleBrowserLib Bullet3Common BulletSoftBody BulletDynamics BulletCollision BulletInverseDynamicsUtils BulletInverseDynamics LinearMath OpenGLWindow gwen
+LINK_LIBRARIES(Bullet3Collision
+  #-lnvidia-opencl.so.1
+     #Bullet3OpenCL_clew Bullet3Dynamics      Bullet3Geometry
+      BulletExampleBrowserLib Bullet3Common BulletSoftBody BulletDynamics BulletCollision BulletInverseDynamicsUtils BulletInverseDynamics LinearMath OpenGLWindow gwen
 )
 
 IF (WIN32)
@@ -112,16 +114,20 @@ SET(ExtendedTutorialsSources
 	../ExtendedTutorials/MultipleBoxes.cpp
 	../ExtendedTutorials/SimpleJoint.cpp
 	../ExtendedTutorials/SimpleCloth.cpp
-	../ExtendedTutorials/Chain.cpp 
-	../ExtendedTutorials/Bridge.cpp 
+	../ExtendedTutorials/Chain.cpp
+	../ExtendedTutorials/Bridge.cpp
 	../ExtendedTutorials/RigidBodyFromObj.cpp
 	../ExtendedTutorials/InclinedPlane.cpp
 	../ExtendedTutorials/InclinedPlane.h
 	../ExtendedTutorials/NewtonsCradle.cpp
 )
 
+include_directories(/usr/include/nvidia-352/)
 SET(BulletExampleBrowser_SRCS
-	
+#../OpenCL/rigidbody/GpuConvexScene.cpp
+#../OpenCL/rigidbody/GpuRigidBodyDemo.cpp
+#../OpenCL/rigidbody/GpuSphereScene.cpp
+	../SoftDemo/SoftDemo.cpp
 	../TinyRenderer/geometry.cpp
 	../TinyRenderer/model.cpp
 	../TinyRenderer/tgaimage.cpp
@@ -231,9 +237,9 @@ SET(BulletExampleBrowser_SRCS
 ../Importers/ImportMeshUtility/b3ImportMeshUtility.h
 	../../Extras/Serialize/BulletWorldImporter/btWorldImporter.cpp
 	../../Extras/Serialize/BulletWorldImporter/btBulletWorldImporter.cpp
-	../../Extras/Serialize/BulletFileLoader/bChunk.cpp		
+	../../Extras/Serialize/BulletFileLoader/bChunk.cpp
 	../../Extras/Serialize/BulletFileLoader/bFile.cpp
-	../../Extras/Serialize/BulletFileLoader/bDNA.cpp		
+	../../Extras/Serialize/BulletFileLoader/bDNA.cpp
 	../../Extras/Serialize/BulletFileLoader/btBulletFile.cpp
 
 	../Importers/ImportBsp/BspLoader.h
@@ -320,7 +326,7 @@ ADD_EXECUTABLE(App_ExampleBrowser
 		ExampleEntries.cpp
 		ExampleEntries.h
 		${ExtendedTutorialsSources}
-		${BulletExampleBrowser_SRCS} 
+		${BulletExampleBrowser_SRCS}
 )
 
 FILE( MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/data" )

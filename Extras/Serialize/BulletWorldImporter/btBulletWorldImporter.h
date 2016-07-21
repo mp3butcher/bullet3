@@ -4,8 +4,8 @@ Copyright (c) 2003-2012 Erwin Coumans  http://bulletphysics.org
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, 
-including commercial applications, and to alter it and redistribute it freely, 
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it freely,
 subject to the following restrictions:
 
 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
@@ -20,6 +20,8 @@ subject to the following restrictions:
 
 #include "btWorldImporter.h"
 
+#include "BulletSoftBody/btSoftBodyData.h"
+#include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
 
 class btBulletFile;
 
@@ -29,25 +31,31 @@ class btBulletFile;
 namespace bParse
 {
 	class btBulletFile;
-	
+
 };
 
 
 
 ///The btBulletWorldImporter is a starting point to import .bullet files.
 ///note that not all data is converted yet. You are expected to override or modify this class.
-///See Bullet/Demos/SerializeDemo for a derived class that extract btSoftBody objects too.
+
 class btBulletWorldImporter : public btWorldImporter
 {
+protected:
+	btSoftRigidDynamicsWorld* m_softRigidWorld;
 
+	btHashMap<btHashPtr,btSoftBody::Material*>	m_materialMap;
+
+	btHashMap<btHashPtr,btSoftBody*>	m_clusterBodyMap;
+	btHashMap<btHashPtr,btSoftBody*>	m_softBodyMap;
 
 public:
-	
+
 	btBulletWorldImporter(btDynamicsWorld* world=0);
 
 	virtual ~btBulletWorldImporter();
 
-	///if you pass a valid preSwapFilenameOut, it will save a new file with a different endianness 
+	///if you pass a valid preSwapFilenameOut, it will save a new file with a different endianness
 	///this pre-swapped file can be loaded without swapping on a target platform of different endianness
 	bool	loadFile(const char* fileName, const char* preSwapFilenameOut=0);
 
@@ -59,10 +67,36 @@ public:
 	//call make sure bulletFile2 has been parsed, either using btBulletFile::parse or btBulletWorldImporter::loadFileFromMemory
 	virtual	bool	convertAllObjects(bParse::btBulletFile* file);
 
-	
+
 
 
 };
+class MySoftBulletWorldImporter : public btBulletWorldImporter
+{
 
+	btSoftRigidDynamicsWorld* m_softRigidWorld;
+
+	btHashMap<btHashPtr,btSoftBody::Material*>	m_materialMap;
+
+	btHashMap<btHashPtr,btSoftBody*>	m_clusterBodyMap;
+	btHashMap<btHashPtr,btSoftBody*>	m_softBodyMap;
+
+
+
+public:
+
+	MySoftBulletWorldImporter(btSoftRigidDynamicsWorld* world)
+		:btBulletWorldImporter(world),
+		m_softRigidWorld(world)
+	{
+
+	}
+
+	virtual ~MySoftBulletWorldImporter()
+	{
+
+	}
+	virtual bool convertAllObjects(  bParse::btBulletFile* bulletFile2);
+};
 #endif //BULLET_WORLD_IMPORTER_H
 
