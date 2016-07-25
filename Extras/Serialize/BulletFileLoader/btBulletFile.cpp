@@ -99,7 +99,7 @@ btBulletFile::~btBulletFile()
 	if (m_DnaCopy)
 		btAlignedFree(m_DnaCopy);
 
-	
+
 	while (m_dataBlocks.size())
 	{
 		char* dataBlock = m_dataBlocks[m_dataBlocks.size()-1];
@@ -121,13 +121,13 @@ void btBulletFile::parseData()
 	const bool brokenDNA = (mFlags&FD_BROKEN_DNA)!=0;
 
 	//const bool swap = (mFlags&FD_ENDIAN_SWAP)!=0;
-	
+
 
 	int remain = mFileLen;
 
 	mDataStart = 12;
 	remain-=12;
-	
+
 
 	char *dataPtr = mFileBuffer+mDataStart;
 
@@ -137,9 +137,9 @@ void btBulletFile::parseData()
 
 	//dataPtr += ChunkUtils::getNextBlock(&dataChunk, dataPtr, mFlags);
 	int seek = getNextBlock(&dataChunk, dataPtr, mFlags);
-	
-	
-	if (mFlags &FD_ENDIAN_SWAP) 
+
+
+	if (mFlags &FD_ENDIAN_SWAP)
 		swapLen(dataPtr);
 
 	//dataPtr += ChunkUtils::getOffset(mFlags);
@@ -182,7 +182,7 @@ void btBulletFile::parseData()
 				{
 					m_softBodies.push_back((bStructHandle*) id);
 				}
-				
+
 				if (dataChunk.code == BT_RIGIDBODY_CODE)
 				{
 					m_rigidBodies.push_back((bStructHandle*) id);
@@ -233,14 +233,14 @@ void btBulletFile::parseData()
 			printf("skipping BT_QUANTIZED_BVH_CODE due to broken DNA\n");
 		}
 
-		
+
 		dataPtr += seek;
 		remain-=seek;
 		if (remain<=0)
 			break;
 
 		seek =  getNextBlock(&dataChunk, dataPtr, mFlags);
-		if (mFlags &FD_ENDIAN_SWAP) 
+		if (mFlags &FD_ENDIAN_SWAP)
 			swapLen(dataPtr);
 
 		if (seek < 0)
@@ -265,7 +265,7 @@ void	btBulletFile::writeDNA(FILE* fp)
 	dataChunk.code = DNA1;
 	dataChunk.dna_nr = 0;
 	dataChunk.nr = 1;
-#ifdef BT_INTERNAL_UPDATE_SERIALIZATION_STRUCTURES	
+#ifdef BT_INTERNAL_UPDATE_SERIALIZATION_STRUCTURES
 	if (VOID_IS_8)
 	{
 #ifdef _WIN64
@@ -313,7 +313,7 @@ void	btBulletFile::parse(int verboseMode)
 	if (VOID_IS_8)
 	{
 #ifdef _WIN64
-		
+
 		if (m_DnaCopy)
 			delete m_DnaCopy;
 		m_DnaCopy = (char*)btAlignedAlloc(sBulletDNAlen64,16);
@@ -354,15 +354,15 @@ void	btBulletFile::parse(int verboseMode)
 		parseInternal(verboseMode,m_DnaCopy,sBulletDNAlen);
 	}
 #endif//BT_INTERNAL_UPDATE_SERIALIZATION_STRUCTURES
-	
+
 	//the parsing will convert to cpu endian
 	mFlags &=~FD_ENDIAN_SWAP;
 
 	int littleEndian= 1;
 	littleEndian= ((char*)&littleEndian)[0];
-	
+
 	mFileBuffer[8] = littleEndian?'v':'V';
-	
+
 }
 
 // experimental
@@ -394,7 +394,7 @@ int		btBulletFile::write(const char* fileName, bool fixupPointers)
 		header[9] = '2';
 		header[10] = '7';
 		header[11] = '5';
-		
+
 		fwrite(header,SIZEOFBLENDERHEADER,1,fp);
 
 		writeChunks(fp, fixupPointers);
@@ -402,7 +402,7 @@ int		btBulletFile::write(const char* fileName, bool fixupPointers)
 		writeDNA(fp);
 
 		fclose(fp);
-		
+
 	} else
 	{
 		printf("Error: cannot open file %s for writing\n",fileName);
@@ -415,7 +415,7 @@ int		btBulletFile::write(const char* fileName, bool fixupPointers)
 
 void	btBulletFile::addStruct(const	char* structType,void* data, int len, void* oldPtr, int code)
 {
-	
+
 	bParse::bChunkInd dataChunk;
 	dataChunk.code = code;
 	dataChunk.nr = 1;
